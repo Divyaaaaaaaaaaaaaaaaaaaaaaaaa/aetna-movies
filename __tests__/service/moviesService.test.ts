@@ -1,40 +1,30 @@
-const request = require('supertest');
-const app = require('../../app');
+const movieService = require('../../service/moviesService');
 
-describe('Movies API routes', () => {
-  test('GET /movies returns list with page', async () => {
-    const res = await request(app).get('/movies?page=2');
-    expect(res.statusCode).toBe(200);
-    expect(res.body.success).toBe(true);
-    expect(Array.isArray(res.body.data)).toBe(true);
-    expect(res.body.meta.page).toBe(2);
+describe('moviesService', () => {
+  test('listMovies returns page and data array', async () => {
+    const { page, data } = await movieService.listMovies(1);
+    expect(page).toBe(1);
+    expect(Array.isArray(data)).toBe(true);
+    if (data.length > 0) {
+      const movie = data[0];
+      expect(movie).toHaveProperty('imdbId');
+      expect(movie).toHaveProperty('title');
+      expect(Array.isArray(movie.genres)).toBe(true);
+      expect(movie).toHaveProperty('releaseDate');
+      expect(movie).toHaveProperty('budget');
+    }
   });
 
-  test('GET /movies/:id returns movie details', async () => {
-    const res = await request(app).get('/movies/tt2391950');
-    expect(res.statusCode).toBe(200);
-    expect(res.body.success).toBe(true);
-    expect(res.body.data.imdbId).toBe('tt2391950');
-  });
-
-  test('GET /movies/abcdefgh returns 404 error', async () => {
-    const res = await request(app).get('/movies/abcdefgh');
-    expect(res.statusCode).toBe(404);
-    expect(res.body.success).toBe(false);
-    expect(res.body.error).toHaveProperty('message', 'Movie not found');
-  });
-
-  test('GET /movies/year/:year returns list', async () => {
-    const res = await request(app).get('/movies/year/2012?page=2&order=asc');
-    expect(res.statusCode).toBe(200);
-    expect(res.body.success).toBe(true);
-    expect(res.body.meta.page).toBe(2);
-  });
-
-  test('GET /movies/genre/:genre returns list', async () => {
-    const res = await request(app).get('/movies/genre/Documentary?page=1');
-    expect(res.statusCode).toBe(200);
-    expect(res.body.success).toBe(true);
-    expect(res.body.meta.page).toBe(1);
+  test('getMovieDetails returns detailed movie object', async () => {
+    const detail = await movieService.getMovieDetails('tt2391950');
+    expect(detail).toHaveProperty('imdbId', 'tt2391950');
+    expect(detail).toHaveProperty('title');
+    expect(detail).toHaveProperty('description');
+    expect(detail).toHaveProperty('releaseDate');
+    expect(detail).toHaveProperty('budget');
+    expect(detail).toHaveProperty('runtime');
+    expect(detail).toHaveProperty('averageRating');
+    expect(Array.isArray(detail.genres)).toBe(true);
+    expect(Array.isArray(detail.productionCompanies)).toBe(true);
   });
 });
