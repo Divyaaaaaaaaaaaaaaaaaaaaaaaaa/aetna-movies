@@ -7,7 +7,7 @@ import {
   movieIdValidator,
 } from '../util/movieApiValidations';
 const router = express.Router();
-const moviesController = require('../controller/movieController');
+const moviesController = require('../controller/moviesController');
 
 router.get('/', pageValidator, moviesController.listMovies);
 
