@@ -9,7 +9,7 @@ import {
 const router = express.Router();
 const moviesController = require('../controller/movieController');
 
-router.get('/', pageValidator, moviesController.listAllMovies);
+router.get('/', pageValidator, moviesController.listMovies);
 
 router.get(
   '/year/:year',
